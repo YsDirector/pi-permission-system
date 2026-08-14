@@ -44,13 +44,15 @@ export function formatAskPrompt(
       result.matchedPattern,
       result.commandContext,
     );
-    const qualifierInfo = qualifier ? ` ${qualifier}` : "";
     const fullCommand = getNonEmptyString(toRecord(input).command);
-    const fullCommandInfo =
-      fullCommand && fullCommand !== subCommand
-        ? ` (full command: '${fullCommand}')`
-        : "";
-    return `${subject} requested bash command '${subCommand}'${qualifierInfo}${fullCommandInfo}. Allow this command?`;
+    // 多行布局：命令单独一行（缩进），规则/完整命令分行展示，便于快速定位
+    const lines = [`${subject} requested bash command:`, `  ${subCommand}`];
+    if (qualifier) lines.push(`Matched rule: ${qualifier.slice(1, -1)}`);
+    if (fullCommand && fullCommand !== subCommand) {
+      lines.push(`Full command: ${fullCommand}`);
+    }
+    lines.push("Allow this command?");
+    return lines.join("\n");
   }
 
   if (isMcpCheck(result) && result.target) {
