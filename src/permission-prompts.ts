@@ -45,8 +45,14 @@ export function formatAskPrompt(
       result.commandContext,
     );
     const fullCommand = getNonEmptyString(toRecord(input).command);
-    // 多行布局：命令单独一行（缩进），规则/完整命令分行展示，便于快速定位
-    const lines = [`${subject} requested bash command:`, `  ${subCommand}`];
+    // 多行布局：命令用代码围栏（```sh）包裹，前端渲染为高亮代码块，便于快速定位风险命令
+    const lines = [
+      `${subject} requested bash command:`,
+      "",
+      "```sh",
+      subCommand,
+      "```",
+    ];
     if (qualifier) lines.push(`Matched rule: ${qualifier.slice(1, -1)}`);
     if (fullCommand && fullCommand !== subCommand) {
       lines.push(`Full command: ${fullCommand}`);
